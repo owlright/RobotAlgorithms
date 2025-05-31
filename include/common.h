@@ -6,6 +6,9 @@
 #include <pcl/point_types.h>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+#include "sophus/se2.hpp"
+#include "sophus/se3.hpp"
+
 namespace ra {
 
 // 点云
@@ -26,6 +29,14 @@ using Vec6f = Eigen::Matrix<float, 6, 1>;
 using Vec9d = Eigen::Matrix<double, 9, 1>;
 using Vec15d = Eigen::Matrix<double, 15, 15>;
 using Vec18d = Eigen::Matrix<double, 18, 1>;
+
+// pose represented as sophus structs
+using SE2 = Sophus::SE2d;
+using SE2f = Sophus::SE2f;
+using SO2 = Sophus::SO2d;
+using SE3 = Sophus::SE3d;
+using SE3f = Sophus::SE3f;
+using SO3 = Sophus::SO3d;
 
 // 点云到Eigen的常用的转换函数
 inline Vec3f ToVec3f(const PointType& pt) { return pt.getVector3fMap(); }

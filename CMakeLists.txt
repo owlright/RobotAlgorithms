@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.10.0)
+project(RobotAlgorithms VERSION 0.1.0 LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# 设置可执行文件的输出目录
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+find_package(Eigen3 REQUIRED)
+add_executable(point_to_plane_icp point_to_plane_icp.cpp)
+# 查找PCL (包含KdTreeFLANN)
+find_package(PCL 1.8 REQUIRED COMPONENTS common kdtree io)
+find_package(glog REQUIRED)
+find_package(gflags REQUIRED)
+find_package(Sophus REQUIRED)
+
+include_directories(include/)
+# 添加Eigen3库
+target_link_libraries(point_to_plane_icp
+    PRIVATE Eigen3::Eigen
+    PRIVATE ${PCL_LIBRARIES}
+    PRIVATE Sophus::Sophus
+    PRIVATE glog::glog
+    PRIVATE gflags
+)
