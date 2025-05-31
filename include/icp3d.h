@@ -27,6 +27,7 @@ public:
     void SetSource(CloudPtr source)
     {
         source_ = source;
+        CHECK_NOTNULL(source_);
         source_center_ = std::accumulate(source_->points.begin(), source_->points.end(), Vec3d::Zero().eval(),
                              [](const Vec3d& c, const PointType& pt) -> Vec3d { return c + ToVec3d(pt); })
             / source_->size();
@@ -36,10 +37,19 @@ public:
     void SetTarget(CloudPtr target)
     {
         target_ = target;
+        CHECK_NOTNULL(target_);
         target_center_ = std::accumulate(target_->points.begin(), target_->points.end(), Vec3d::Zero().eval(),
                              [](const Vec3d& c, const PointType& pt) -> Vec3d { return c + ToVec3d(pt); })
             / target_->size();
         LOG(INFO) << "target center: " << target_center_.transpose();
+    }
+
+    void BuildKdTree()
+    {
+        CHECK_NOTNULL(target_);
+        kdtree_ = std::make_shared<pcl::KdTreeFLANN<PointType>>();
+        kdtree_->setInputCloud(target_);
+        LOG(INFO) << "KdTree built for target point cloud.";
     }
     /// 使用gauss-newton方法进行配准, 点到点
     bool AlignP2P(SE3& init_pose);
@@ -55,6 +65,10 @@ private:
     CloudPtr target_;
     Vec3d source_center_;
     Vec3d target_center_;
+
+    Options options_;
+    //KdTree
+    pcl::KdTreeFLANN<PointType>::Ptr kdtree_;
 };
 
 }

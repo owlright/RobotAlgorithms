@@ -4,6 +4,7 @@
 #include <glog/logging.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/kdtree/kdtree_flann.h> // for KdTree
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include "sophus/se2.hpp"
@@ -41,5 +42,14 @@ using SO3 = Sophus::SO3d;
 // 点云到Eigen的常用的转换函数
 inline Vec3f ToVec3f(const PointType& pt) { return pt.getVector3fMap(); }
 inline Vec3d ToVec3d(const PointType& pt) { return pt.getVector3fMap().cast<double>(); }
+
+template <typename S>
+inline PointType ToPointType(const Eigen::Matrix<S, 3, 1>& pt) {
+    PointType p;
+    p.x = pt.x();
+    p.y = pt.y();
+    p.z = pt.z();
+    return p;
+}
 
 }

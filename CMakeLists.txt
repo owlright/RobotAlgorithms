@@ -16,6 +16,16 @@ find_package(gflags REQUIRED)
 find_package(Sophus REQUIRED)
 
 include_directories(include/)
+
+# 根据构建类型设置编译选项
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Build type: Debug")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0") # 启用调试符号，禁用优化
+else()
+    message(STATUS "Build type: Release")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") # 启用优化
+endif()
+
 # 添加Eigen3库
 target_link_libraries(test_icp
     PRIVATE Eigen3::Eigen

@@ -157,6 +157,8 @@ int main(int argc, char** argv) {
     // 设置日志格式：包含时间戳、日志级别和文件位置
     FLAGS_log_prefix = true; // 启用日志前缀
     FLAGS_logtostderr = true; // 日志输出到标准错误
+    google::SetUsageMessage("ICP3d test program.\n"
+        "Usage: ./test_icp --source <source.pcd> --target <target.pcd>");
     google::ParseCommandLineFlags(&argc, &argv, true);
 
 
@@ -166,6 +168,10 @@ int main(int argc, char** argv) {
     ra::ICP3d icp;
     icp.SetSource(source);
     icp.SetTarget(target);
+    icp.BuildKdTree();
+    ra::SE3 init_pose;
+    bool success = icp.AlignP2P(init_pose);
+
     // // 生成测试数据
     // int n_points = 100;
     // auto [source, target] = generate_test_data(n_points);
