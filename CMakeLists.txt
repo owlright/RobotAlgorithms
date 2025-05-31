@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(Eigen3 REQUIRED)
-add_executable(point_to_plane_icp point_to_plane_icp.cpp)
+add_executable(point_to_plane_icp point_to_plane_icp.cpp src/icp3d.cpp)
 # 查找PCL (包含KdTreeFLANN)
 find_package(PCL 1.8 REQUIRED COMPONENTS common kdtree io)
 find_package(glog REQUIRED)
