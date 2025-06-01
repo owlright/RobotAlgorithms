@@ -92,4 +92,10 @@ void benchmark(FuncT&& func, const std::string& func_name = "", int times = 10) 
 
     LOG(INFO) << "方法 " << func_name << " 平均调用时间/次数: " << total_time / times << "/" << times << " 毫秒.";
 }
+template<typename CloudType>
+void SaveCloudToFile(const std::string &filePath, CloudType &cloud) {
+    cloud.height = 1;
+    cloud.width = cloud.size();
+    pcl::io::savePCDFileASCII(filePath, cloud);
+}
 }
