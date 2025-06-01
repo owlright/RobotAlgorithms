@@ -8,13 +8,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(Eigen3 REQUIRED)
-add_executable(test_icp test_icp.cpp src/icp3d.cpp)
 # 查找PCL (包含KdTreeFLANN)
 find_package(PCL 1.8 REQUIRED COMPONENTS common kdtree io)
 find_package(glog REQUIRED)
 find_package(gflags REQUIRED)
 find_package(Sophus REQUIRED)
-
+find_package(TBB REQUIRED)
 include_directories(include/)
 
 # 根据构建类型设置编译选项
@@ -26,6 +25,8 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") # 启用优化
 endif()
 
+add_executable(test_icp test_icp.cpp src/icp3d.cpp)
+add_executable(matrix_solver_stability_demo matrix_solver_stability_demo.cpp)
 # 添加Eigen3库
 target_link_libraries(test_icp
     PRIVATE Eigen3::Eigen
@@ -33,4 +34,9 @@ target_link_libraries(test_icp
     PRIVATE Sophus::Sophus
     PRIVATE glog::glog
     PRIVATE gflags
+    PRIVATE TBB::tbb
+)
+
+target_link_libraries(matrix_solver_stability_demo
+    PRIVATE Eigen3::Eigen
 )
