@@ -47,7 +47,7 @@ public:
     void BuildKdTree()
     {
         CHECK_NOTNULL(target_);
-        kdtree_ = std::make_shared<pcl::KdTreeFLANN<PointType>>();
+        kdtree_ = boost::make_shared<pcl::KdTreeFLANN<PointType>>();
         kdtree_->setInputCloud(target_);
         LOG(INFO) << "KdTree built for target point cloud.";
     }
