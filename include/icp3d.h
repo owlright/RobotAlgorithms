@@ -52,6 +52,8 @@ public:
         LOG(INFO) << "KdTree built for target point cloud.";
     }
     /// 使用gauss-newton方法进行配准, 点到点
+    bool AlignP2P_no_parallel(SE3& init_pose);
+
     bool AlignP2P(SE3& init_pose);
 
     /// 基于gauss-newton的点线ICP
@@ -69,6 +71,8 @@ private:
     Options options_;
     //KdTree
     pcl::KdTreeFLANN<PointType>::Ptr kdtree_;
+    bool gt_set_ = false;
+    SE3 gt_pose_; // ground truth pose, if available
 };
 
 }

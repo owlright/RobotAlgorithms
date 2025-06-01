@@ -170,7 +170,14 @@ int main(int argc, char** argv) {
     icp.SetTarget(target);
     icp.BuildKdTree();
     ra::SE3 init_pose;
-    bool success = icp.AlignP2P(init_pose);
+    bool success = false;
+    // ra::benchmark([&]() {success = icp.AlignP2P_no_parallel(init_pose);}, "ICP P2P Parallel Version", 1);
+    ra::benchmark([&]() {success = icp.AlignP2P(init_pose);}, "ICP P2P", 1);
+    if (success) {
+        LOG(INFO) << "ICP P2P alignment succeeded with final pose: " << init_pose.translation().transpose();
+    } else {
+        LOG(ERROR) << "ICP P2P alignment failed.";
+    }
 
     // // 生成测试数据
     // int n_points = 100;
