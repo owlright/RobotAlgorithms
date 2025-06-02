@@ -1,6 +1,19 @@
 #include "icp3d.h"
 #include <algorithm>    // std::for_each
 #include <execution>    // std::execution::par_unseq
+#include <thread>
+
+bool IS_STD_PAR_UNSEQ_SUPPORTED = []() {
+    try {
+        std::vector<int> data(10, 1);
+        std::for_each(std::execution::par_unseq, data.begin(), data.end(), [](int& x) { x *= 2; });
+        return true;
+    } catch (...) {
+        LOG(WARNING) << "Parallel execution with std::execution::par_unseq is not supported on this system.";
+        return false;
+    }
+}();
+
 namespace ra {
 bool ICP3d::AlignP2P_no_parallel(SE3& init_pose)
 {

@@ -34,12 +34,11 @@ target_link_libraries(test_icp
     PRIVATE Sophus::Sophus
     PRIVATE glog::glog
     PRIVATE gflags
+    PRIVATE pthread
     # PRIVATE TBB::tbb
 )
 if (TBB_FOUND)
     target_link_libraries(test_icp PRIVATE TBB::tbb)
-else()
-    message(WARNING "TBB not found, proceeding without TBB support.")
 endif()
 
 target_link_libraries(matrix_solver_stability_demo
