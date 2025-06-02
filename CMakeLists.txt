@@ -13,7 +13,7 @@ find_package(PCL 1.8 REQUIRED COMPONENTS common kdtree io)
 find_package(glog REQUIRED)
 find_package(gflags REQUIRED)
 find_package(Sophus REQUIRED)
-find_package(TBB REQUIRED)
+find_package(TBB)
 include_directories(include/)
 
 # 根据构建类型设置编译选项
@@ -34,8 +34,13 @@ target_link_libraries(test_icp
     PRIVATE Sophus::Sophus
     PRIVATE glog::glog
     PRIVATE gflags
-    PRIVATE TBB::tbb
+    # PRIVATE TBB::tbb
 )
+if (TBB_FOUND)
+    target_link_libraries(test_icp PRIVATE TBB::tbb)
+else()
+    message(WARNING "TBB not found, proceeding without TBB support.")
+endif()
 
 target_link_libraries(matrix_solver_stability_demo
     PRIVATE Eigen3::Eigen
