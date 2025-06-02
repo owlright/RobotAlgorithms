@@ -1,6 +1,14 @@
 #pragma once
 #include "common.h"
 #include <numeric> // for std::accumulate
+#ifdef __APPLE__
+// macOS 平台使用 std::make_shared
+#define MAKE_SHARED std::make_shared
+#else
+// 其他平台使用 boost::make_shared
+#define MAKE_SHARED boost::make_shared
+#endif
+
 namespace ra {
 
 class ICP3d {
@@ -47,7 +55,7 @@ public:
     void BuildKdTree()
     {
         CHECK_NOTNULL(target_);
-        kdtree_ = boost::make_shared<pcl::KdTreeFLANN<PointType>>();
+        kdtree_ = MAKE_SHARED<pcl::KdTreeFLANN<PointType>>();
         kdtree_->setInputCloud(target_);
         LOG(INFO) << "KdTree built for target point cloud.";
     }
