@@ -48,7 +48,7 @@ int main(int argc, char** argv)
                 LOG(ERROR) << "ICP P2P alignment failed.";
             }
         },
-        "ICP P2P", 1);
+        "ICP P2P", 10);
 
     // // 生成测试数据
     // int n_points = 100;
