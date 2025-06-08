@@ -27,6 +27,7 @@ endif()
 
 add_executable(test_icp test_icp.cpp src/icp3d.cpp)
 add_executable(matrix_solver_stability_demo matrix_solver_stability_demo.cpp)
+add_executable(test_ndt test_ndt.cpp src/ndt3d.cpp)
 # 添加Eigen3库
 target_link_libraries(test_icp
     PRIVATE Eigen3::Eigen
@@ -36,6 +37,14 @@ target_link_libraries(test_icp
     PRIVATE gflags
     PRIVATE pthread
     # PRIVATE TBB::tbb
+)
+target_link_libraries(test_ndt
+    PRIVATE Eigen3::Eigen
+    PRIVATE ${PCL_LIBRARIES}
+    PRIVATE Sophus::Sophus
+    PRIVATE glog::glog
+    PRIVATE gflags
+    PRIVATE pthread
 )
 if (TBB_FOUND)
     target_link_libraries(test_icp PRIVATE TBB::tbb)
