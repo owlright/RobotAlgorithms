@@ -1,6 +1,7 @@
 #include "icp3d.h"
-#include <algorithm>    // std::for_each
-#include <execution>    // std::execution::par_unseq
+#include "util.h"
+#include <algorithm> // std::for_each
+#include <execution> // std::execution::par_unseq
 #include <thread>
 
 namespace ra {
@@ -50,27 +51,6 @@ bool ICP3d::AlignP2P_no_parallel(SE3& init_pose)
     return true;
 }
 
-void parallel_for(size_t start, size_t end, const std::function<void(size_t)>& func) {
-    size_t num_threads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads;
-
-    size_t chunk_size = (end - start + num_threads - 1) / num_threads;
-    for (size_t t = 0; t < num_threads; ++t) {
-        size_t chunk_start = start + t * chunk_size;
-        size_t chunk_end = std::min(chunk_start + chunk_size, end);
-
-        threads.emplace_back([=]() {
-            for (size_t i = chunk_start; i < chunk_end; ++i) {
-                func(i);
-            }
-        });
-    }
-
-    for (auto& thread : threads) {
-        thread.join();
-    }
-}
-
 bool ICP3d::AlignP2P(SE3& init_pose)
 {
     LOG(INFO) << "aligning point cloud using P2P ICP with initial pose: " << init_pose.translation().transpose();
@@ -88,8 +68,8 @@ bool ICP3d::AlignP2P(SE3& init_pose)
     std::vector<Eigen::Matrix<double, 3, 6>> jacobians(index.size());
     std::vector<Vec3d> errors(index.size());
     for (int iter = 0; iter < options_.max_iteration_; iter++) {
-        parallel_for(0, index.size(), [&](size_t i) {
-        // std::for_each(std::execution::par_unseq, index.begin(), index.end(), [&](int i) {
+        util::parallel_for(0, index.size(), [&](size_t i) {
+            // std::for_each(std::execution::par_unseq, index.begin(), index.end(), [&](int i) {
             auto q = ToVec3d(source_->points[i]);
             Vec3d q_trans = pose * q; // Apply the current pose to the source point
             std::vector<int> nn_indices;
