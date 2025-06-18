@@ -14,12 +14,12 @@ namespace ra {
 class ICP3d {
 public:
     struct Options {
-        int max_iteration_ = 20; // 最大迭代次数
-        double max_nn_distance_ = 1.0; // 点到点最近邻查找时阈值
-        double max_plane_distance_ = 0.05; // 平面最近邻查找时阈值
-        double max_line_distance_ = 0.5; // 点线最近邻查找时阈值
-        int min_effective_pts_ = 10; // 最近邻点数阈值
-        double eps_ = 1e-2; // 收敛判定条件
+        int max_iteration_ = 20;               // 最大迭代次数
+        double max_nn_distance_ = 1.0;         // 点到点最近邻查找时阈值
+        double max_plane_distance_ = 0.05;     // 平面最近邻查找时阈值
+        double max_line_distance_ = 0.5;       // 点线最近邻查找时阈值
+        int min_effective_pts_ = 10;           // 最近邻点数阈值
+        double eps_ = 1e-2;                    // 收敛判定条件
         bool use_initial_translation_ = false; // 是否使用初始位姿中的平移估计
     };
 
@@ -36,7 +36,8 @@ public:
     {
         source_ = source;
         CHECK_NOTNULL(source_);
-        source_center_ = std::accumulate(source_->points.begin(), source_->points.end(), Vec3d::Zero().eval(),
+        source_center_ = std::accumulate(
+                             source_->points.begin(), source_->points.end(), Vec3d::Zero().eval(),
                              [](const Vec3d& c, const PointType& pt) -> Vec3d { return c + ToVec3d(pt); })
             / source_->size();
         LOG(INFO) << "source center: " << source_center_.transpose();
@@ -46,7 +47,8 @@ public:
     {
         target_ = target;
         CHECK_NOTNULL(target_);
-        target_center_ = std::accumulate(target_->points.begin(), target_->points.end(), Vec3d::Zero().eval(),
+        target_center_ = std::accumulate(
+                             target_->points.begin(), target_->points.end(), Vec3d::Zero().eval(),
                              [](const Vec3d& c, const PointType& pt) -> Vec3d { return c + ToVec3d(pt); })
             / target_->size();
         LOG(INFO) << "target center: " << target_center_.transpose();
@@ -77,7 +79,7 @@ private:
     Vec3d target_center_;
 
     Options options_;
-    //KdTree
+    // KdTree
     pcl::KdTreeFLANN<PointType>::Ptr kdtree_;
     bool gt_set_ = false;
     SE3 gt_pose_; // ground truth pose, if available

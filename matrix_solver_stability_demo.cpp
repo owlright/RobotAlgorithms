@@ -16,10 +16,10 @@ int main()
     cout << "A:" << endl;
     cout << A << endl;
     cout << "x:" << endl;
-    cout << x << endl; // 输出 A * x
+    cout << x << endl;  // 输出 A * x
     Vector3d b = A * x; // 计算 Ax
     cout << "b=Ax:" << endl;
-    cout << b << endl; // 输出 b
+    cout << b << endl;            // 输出 b
     auto AtA = A.transpose() * A; // 确保矩阵是对称的
     cout << "AtA:" << endl;
     cout << AtA << endl;

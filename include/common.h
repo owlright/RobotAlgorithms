@@ -65,7 +65,8 @@ inline Vec3f ToVec3f(const PointType& pt) { return pt.getVector3fMap(); }
 inline Vec3d ToVec3d(const PointType& pt) { return pt.getVector3fMap().cast<double>(); }
 
 template <typename S>
-inline PointType ToPointType(const Eigen::Matrix<S, 3, 1>& pt) {
+inline PointType ToPointType(const Eigen::Matrix<S, 3, 1>& pt)
+{
     PointType p;
     p.x = pt.x();
     p.y = pt.y();
@@ -81,7 +82,8 @@ inline PointType ToPointType(const Eigen::Matrix<S, 3, 1>& pt) {
  * @param times 调用次数
  */
 template <typename FuncT>
-void benchmark(FuncT&& func, const std::string& func_name = "", int times = 10) {
+void benchmark(FuncT&& func, const std::string& func_name = "", int times = 10)
+{
     double total_time = 0;
     for (int i = 0; i < times; ++i) {
         auto t1 = std::chrono::high_resolution_clock::now();
@@ -92,8 +94,9 @@ void benchmark(FuncT&& func, const std::string& func_name = "", int times = 10) 
 
     LOG(INFO) << "方法 " << func_name << " 平均调用时间/次数: " << total_time / times << "/" << times << " 毫秒.";
 }
-template<typename CloudType>
-void SaveCloudToFile(const std::string &filePath, CloudType &cloud) {
+template <typename CloudType>
+void SaveCloudToFile(const std::string& filePath, CloudType& cloud)
+{
     cloud.height = 1;
     cloud.width = cloud.size();
     pcl::io::savePCDFileASCII(filePath, cloud);

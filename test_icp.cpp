@@ -5,8 +5,8 @@
 
 #include <random>
 
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/transforms.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 DEFINE_string(source, "../EPFL/kneeling_lady_source.pcd", "第1个点云路径");
 DEFINE_string(target, "../EPFL/kneeling_lady_target.pcd", "第2个点云路径");
@@ -19,10 +19,11 @@ int main(int argc, char** argv)
     FLAGS_stderrthreshold = google::INFO;
     FLAGS_colorlogtostderr = true;
     // 设置日志格式：包含时间戳、日志级别和文件位置
-    FLAGS_log_prefix = true; // 启用日志前缀
+    FLAGS_log_prefix = true;  // 启用日志前缀
     FLAGS_logtostderr = true; // 日志输出到标准错误
-    google::SetUsageMessage("ICP3d test program.\n"
-                            "Usage: ./test_icp --source <source.pcd> --target <target.pcd>");
+    google::SetUsageMessage(
+        "ICP3d test program.\n"
+        "Usage: ./test_icp --source <source.pcd> --target <target.pcd>");
     google::ParseCommandLineFlags(&argc, &argv, true);
 
     ra::CloudPtr source(new ra::PointCloudType), target(new ra::PointCloudType);

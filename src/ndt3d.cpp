@@ -20,8 +20,9 @@ void NDT3d::BuildVoxels()
     util::parallel_for(grids_.begin(), grids_.end(), [this](auto& v) {
         if (v.second.idx_.size() > options_.min_pts_in_voxel_) {
             // 要求至少有３个点
-            math::ComputeMeanAndCov(v.second.idx_, v.second.mu_, v.second.sigma_,
-                [this](const size_t& idx) { return ToVec3d(target_->points[idx]); });
+            math::ComputeMeanAndCov(v.second.idx_, v.second.mu_, v.second.sigma_, [this](const size_t& idx) {
+                return ToVec3d(target_->points[idx]);
+            });
             // SVD 检查最大与最小奇异值，限制最小奇异值
 
             Eigen::JacobiSVD svd(v.second.sigma_, Eigen::ComputeFullU | Eigen::ComputeFullV);

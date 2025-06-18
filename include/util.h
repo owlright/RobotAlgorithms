@@ -26,7 +26,8 @@ namespace util {
         }
     }
 
-    template <typename Iterator, typename Func> void parallel_for(Iterator begin, Iterator end, Func func)
+    template <typename Iterator, typename Func>
+    void parallel_for(Iterator begin, Iterator end, Func func)
     {
         size_t num_threads = std::thread::hardware_concurrency();
         std::vector<std::thread> threads;
