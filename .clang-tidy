@@ -1,0 +1,11 @@
+Checks: '-*,bugprone-*,performance-*,readability-*,modernize-*,clang-analyzer-*,-modernize-use-trailing-return-type,-readability-magic-numbers,-readability-identifier-length'
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle:     file
+CheckOptions:
+  - key:             modernize-use-nullptr.NullMacros
+    value:           'NULL'
+  - key:             readability-identifier-naming.VariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.FunctionCase
+    value:           camelBack
