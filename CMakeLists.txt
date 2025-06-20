@@ -25,31 +25,25 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") # 启用优化
 endif()
 
-add_executable(test_icp test_icp.cpp src/icp3d.cpp)
 add_executable(matrix_solver_stability_demo matrix_solver_stability_demo.cpp)
-add_executable(test_ndt test_ndt.cpp src/ndt3d.cpp)
-# 添加Eigen3库
-target_link_libraries(test_icp
-    PRIVATE Eigen3::Eigen
-    PRIVATE ${PCL_LIBRARIES}
-    PRIVATE Sophus::Sophus
-    PRIVATE glog::glog
-    PRIVATE gflags
-    PRIVATE pthread
-    # PRIVATE TBB::tbb
-)
-target_link_libraries(test_ndt
-    PRIVATE Eigen3::Eigen
-    PRIVATE ${PCL_LIBRARIES}
-    PRIVATE Sophus::Sophus
-    PRIVATE glog::glog
-    PRIVATE gflags
-    PRIVATE pthread
-)
-if (TBB_FOUND)
-    target_link_libraries(test_icp PRIVATE TBB::tbb)
-endif()
-
 target_link_libraries(matrix_solver_stability_demo
     PRIVATE Eigen3::Eigen
 )
+
+add_executable(test_icp test_icp.cpp src/icp3d.cpp)
+add_executable(test_ndt test_ndt.cpp src/ndt3d.cpp)
+
+# 自动查找所有的 .cpp 文件
+file(GLOB_RECURSE LIB_CPP_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
+add_library(ra ${LIB_CPP_FILES})
+target_link_libraries(ra
+    PUBLIC Eigen3::Eigen
+    PUBLIC ${PCL_LIBRARIES}
+    PUBLIC Sophus::Sophus
+    PUBLIC glog::glog
+    PUBLIC gflags
+    PUBLIC pthread
+)
+# 添加Eigen3库
+target_link_libraries(test_icp ra)
+target_link_libraries(test_ndt ra)
