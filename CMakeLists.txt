@@ -32,6 +32,7 @@ target_link_libraries(matrix_solver_stability_demo
 
 add_executable(test_icp test_icp.cpp src/icp3d.cpp)
 add_executable(test_ndt test_ndt.cpp src/ndt3d.cpp)
+add_executable(run_imu_integration run_imu_integration.cpp)
 
 # 自动查找所有的 .cpp 文件
 file(GLOB_RECURSE LIB_CPP_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
@@ -47,3 +48,5 @@ target_link_libraries(ra
 # 添加Eigen3库
 target_link_libraries(test_icp ra)
 target_link_libraries(test_ndt ra)
+target_link_libraries(run_imu_integration ra)
+

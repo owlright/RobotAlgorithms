@@ -9,3 +9,4 @@ BreakStringLiterals: true
 AlignAfterOpenBracket: AlwaysBreak
 AllowShortIfStatementsOnASingleLine: true # 如果if 后面没有 {} 且是单语句时，紧贴在同一行
 AlignTrailingComments: true
+NamespaceIndentation: None
