@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 
     ra::IMUIntegration imu_integ(gravity, init_bg, init_ba);
 
-    imuTxt.SetParseFunc([](const std::string& line) -> ra::IMU {
+    imuTxt.SetParseFunc([](const std::string& line) -> std::optional<ra::IMU> {
         std::stringstream ss(line);
         std::string data_type;
         ss >> data_type;
@@ -36,10 +36,10 @@ int main(int argc, char** argv)
             ss >> time >> gx >> gy >> gz >> ax >> ay >> az;
             return ra::IMU(time, ra::Vec3d(gx, gy, gz), ra::Vec3d(ax, ay, az));
         } else {
-            return ra::IMU(); // 返回一个默认的IMU对象
+            return std::nullopt; // 如果不是IMU数据，返回空
         }
     }).SetProcessFunc([&imu_integ](const ra::IMU& imu) {
         imu_integ.AddIMU(imu);
-    });
+    }).Process();
     return 0;
 }

@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 #include <fstream>
+#include <optional>
 #include "common.h"
 namespace ra {
 
@@ -19,7 +20,7 @@ public:
         }
     }
     using ProcessFuncType = std::function<void(const T&)>;
-    using ParseFuncType = std::function<T(const std::string&)>;
+    using ParseFuncType = std::function<std::optional<T>(const std::string&)>;
 
     ~TxtIO() = default;
 
@@ -28,6 +29,14 @@ public:
     {
         if (!fin.is_open()) {
             LOG(ERROR) << "File is not open.";
+        }
+        if (!processFunc) {
+            LOG(ERROR) << "Process function is not set.";
+            return;
+        }
+        if (!parseFunc) {
+            LOG(ERROR) << "Parse function is not set.";
+            return;
         }
         while (!fin.eof()) {
             std::string line;
@@ -44,8 +53,10 @@ public:
             // load data from line
             std::stringstream ss;
             ss << line;
-            T data = parseFunc ? parseFunc(line) : T();
-            processFunc(data);
+            auto data = parseFunc(line);
+            if (data) {
+                processFunc(*data);
+            }
         }
 
         LOG(INFO) << "done.";
