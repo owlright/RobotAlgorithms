@@ -9,4 +9,6 @@ BreakStringLiterals: true
 AlignAfterOpenBracket: AlwaysBreak
 AllowShortIfStatementsOnASingleLine: true # 如果if 后面没有 {} 且是单语句时，紧贴在同一行
 AlignTrailingComments: true
-NamespaceIndentation: None
+NamespaceIndentation: None # 命名空间不缩进
+# 数组对齐
+AlignArrayOfStructures: Left
