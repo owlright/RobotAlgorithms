@@ -50,3 +50,4 @@ target_link_libraries(test_icp ra)
 target_link_libraries(test_ndt ra)
 target_link_libraries(run_imu_integration ra)
 
+add_subdirectory(test)
