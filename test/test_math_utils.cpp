@@ -1,8 +1,44 @@
 #include "common/math_utils.h"
 #include <Eigen/Dense>
+#include <fstream>
+#include <gflags/gflags.h>
 #include <gtest/gtest.h>
+using namespace ra;
+DEFINE_int32(num_tested_points_plane, 1000, "Number of points to test plane fitting");
+// 初始化测试环境
+// 自定义日志前缀函数
+void CustomLogPrefix(std::ostream& s, const google::LogMessage& l, void*)
+{
+    // 获取当前时间
+    auto now = std::chrono::system_clock::now();
+    auto time_t = std::chrono::system_clock::to_time_t(now);
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
-// 全局初始化
+    // 获取日志等级
+    const char* level = "";
+    switch (l.severity()) {
+    case google::GLOG_INFO:
+        level = "INFO";
+        break;
+    case google::GLOG_WARNING:
+        level = "WARNING";
+        break;
+    case google::GLOG_ERROR:
+        level = "ERROR";
+        break;
+    case google::GLOG_FATAL:
+        level = "FATAL";
+        break;
+    default:
+        level = "UNKNOWN";
+        break;
+    }
+    s << "[" << level << "]"
+      << "[" << std::put_time(std::localtime(&time_t), "%H:%M:%S") << '.' << std::setfill('0') << std::setw(3)
+      << ms.count() << "]"
+      << "[" << l.basename() << ":" << l.line() << "] ";
+}
+
 class TestEnvironment : public ::testing::Environment {
 public:
     void SetUp() override
@@ -10,6 +46,8 @@ public:
         google::InitGoogleLogging("test_math_utils");
         FLAGS_stderrthreshold = google::INFO;
         FLAGS_colorlogtostderr = true;
+        // 安装自定义日志前缀
+        google::InstallPrefixFormatter(&CustomLogPrefix, nullptr);
     }
 
     void TearDown() override { google::ShutdownGoogleLogging(); }
