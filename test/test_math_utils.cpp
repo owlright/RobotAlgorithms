@@ -58,6 +58,7 @@ GTEST_API_ int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::FLAGS_gtest_color = "yes"; // 设置彩色输出
+    ::testing::FLAGS_gtest_brief = true;  // 简洁输出
     ::testing::AddGlobalTestEnvironment(new TestEnvironment);
     return RUN_ALL_TESTS();
 }
