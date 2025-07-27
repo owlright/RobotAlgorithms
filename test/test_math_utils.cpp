@@ -257,3 +257,49 @@ TEST(FitPlaneTest, BasicFunctionality)
     EXPECT_NEAR(plane_coeffs[2], 0.0, 5e-3);
     EXPECT_NEAR(plane_coeffs[3], 0.573, 5e-3); // Plane equation: x + y + z - 6 = 0
 }
+
+TEST(FitPlaneTest, RandomPoints)
+{
+    // a*x + b*y + c*z + d = 0
+    // [a, b, c] * [x, y, z]^T + d = 0
+    // n * P + d = 0
+
+    ra::Vec4d true_plane_coeffs(1, 2, 3, 4);
+    Plane3DEquation<double> plane(true_plane_coeffs);
+    LOG(INFO) << "True plane coefficients:" << plane.coeffs().transpose();
+    plane.setSeed(42);
+    auto points = plane.generateRandomPoints(FLAGS_num_tested_points_plane, 10.0, 0.01);
+    std::ofstream datafile("../scripts/plane_points.txt");
+    if (datafile.is_open()) {
+        for (const auto& point : points) {
+            datafile << point(0) << " " << point(1) << " " << point(2) << std::endl;
+        }
+        datafile.close();
+        LOG(INFO) << "Successfully wrote " << points.size() << " points to plane_points.txt";
+    }
+    // Fit plane to generated points
+    Plane3DEquation<double> fitted_plane;
+    EXPECT_TRUE(fitted_plane.fitFromPoints(points));
+    LOG(INFO) << "Fitted plane coefficients: " << fitted_plane.coeffs().transpose();
+    points = fitted_plane.generateRandomPoints(FLAGS_num_tested_points_plane, 10.0, 0.01);
+    std::ofstream fitted_datafile("../scripts/fitted_plane_points.txt");
+    if (fitted_datafile.is_open()) {
+        for (const auto& point : points) {
+            fitted_datafile << point(0) << " " << point(1) << " " << point(2) << std::endl;
+        }
+        fitted_datafile.close();
+        LOG(INFO) << "Successfully wrote " << points.size() << " fitted points to fitted_plane_points.txt";
+    }
+    // Check if fitted coefficients are close to true coefficients
+    // Note: plane normal can point in opposite direction
+    double dot_product = fitted_plane.normal().dot(plane.normal());
+    if (dot_product < 0) {
+        fitted_plane.setCoeffs(-fitted_plane.coeffs());
+        LOG(INFO) << "Fitted plane coefficients flipped to match true coefficients direction";
+    }
+
+    EXPECT_NEAR(fitted_plane.coeffs()(0), plane.coeffs()(0), 1e-3);
+    EXPECT_NEAR(fitted_plane.coeffs()(1), plane.coeffs()(1), 1e-3);
+    EXPECT_NEAR(fitted_plane.coeffs()(2), plane.coeffs()(2), 1e-3);
+    EXPECT_NEAR(fitted_plane.coeffs()(3), plane.coeffs()(3), 1e-3);
+}
