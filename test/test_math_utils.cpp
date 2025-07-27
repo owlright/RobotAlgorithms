@@ -5,6 +5,124 @@
 #include <gtest/gtest.h>
 using namespace ra;
 DEFINE_int32(num_tested_points_plane, 1000, "Number of points to test plane fitting");
+
+template <typename S>
+class Plane3DEquation {
+public:
+    using V3 = Eigen::Matrix<S, 3, 1>;
+    using V4 = Eigen::Matrix<S, 4, 1>;
+    Plane3DEquation()
+        : coeffs_(V4::Zero())
+    {
+    }
+
+    /* -------------------------------- 构造平面的不同方法 ------------------------------- */
+    // 从平面系数构造
+    explicit Plane3DEquation(const V4& coeffs)
+        : coeffs_(coeffs)
+    {
+        normalize();
+    }
+
+    // 从法向量和点构造
+    Plane3DEquation(const V3& normal, const V3& point)
+    {
+        V3 n = normal.normalized();
+        S d = -n.dot(point);
+        coeffs_ << n, d;
+    }
+
+    // 从三个点构造平面
+    Plane3DEquation(const V3& p1, const V3& p2, const V3& p3)
+    {
+        V3 v1 = p2 - p1;
+        V3 v2 = p3 - p1;
+        V3 normal = v1.cross(v2).normalized();
+        S d = -normal.dot(p1);
+        coeffs_ << normal, d;
+    }
+    /* -------------------------------------------------------------------------- */
+
+    // 使用 FitPlane 函数拟合平面
+    // clang-format off
+    bool fitFromPoints(const std::vector<V3>& points, double eps = 0.1) {
+        bool success = ra::FitPlane(points, coeffs_, eps);
+        if (success) {
+            normalize();
+        } else {
+            LOG(WARNING) << "Plane fitting failed";
+        }
+        return success;
+    }
+    // clang-format on
+
+    // 归一化平面系数
+    void normalize()
+    {
+        S norm = coeffs_.template head<3>().norm();
+        if (norm > 1e-10) {
+            coeffs_ /= norm;
+        }
+    }
+
+    void setCoeffs(const V4& coeffs)
+    {
+        coeffs_ = coeffs;
+        normalize();
+    }
+
+    /* --------------------------------- 获取数据函数 --------------------------------- */
+    const V4& coeffs() const { return coeffs_; }
+    V3 normal() const { return coeffs_.template head<3>(); }
+
+    /* ---------------------------------- 生成数据 ---------------------------------- */
+    void setSeed(unsigned int seed) { gen_.seed(seed); }
+    std::vector<V3> generateRandomPoints(int num_points, S range = 10.0, S noise_std = 0.01)
+    {
+        std::vector<V3> points;
+        points.reserve(num_points);
+        std::normal_distribution<S> noise(0.0, noise_std);
+        std::uniform_real_distribution<S> dis(-range, range);
+        // Generate random points on the plane
+        for (int i = 0; i < num_points; ++i) {
+            // Generate two random parameters for plane parametrization
+            S u = dis(gen_);
+            S v = dis(gen_);
+
+            // Create two orthogonal vectors on the plane
+            auto normal = this->normal();
+            V3 tangent1, tangent2;
+
+            // Find a vector not parallel to normal
+            if (std::abs(normal(0)) < 0.9) {
+                tangent1 = V3(1, 0, 0);
+            } else {
+                tangent1 = V3(0, 1, 0);
+            }
+
+            // 使用 Gram-Schmidt 正交化投影到平面
+            tangent1 = tangent1 - tangent1.dot(normal) * normal;
+            tangent1.normalize();
+            tangent2 = normal.cross(tangent1); // 叉积得到垂直于normal和tangen1的向量
+
+            // Point on plane: base_point + u*tangent1 + v*tangent2
+            // ! 注意coeffs一定要是归一化的
+            V3 base_point = -coeffs_(3) * normal; // 原点到平面的最短距离
+            V3 point = base_point + u * tangent1 + v * tangent2;
+
+            // Add small noise
+            point += V3(noise(gen_), noise(gen_), noise(gen_));
+
+            points.push_back(point);
+        }
+        return points;
+    }
+
+private:
+    V4 coeffs_;        // 平面系数 [a, b, c, d] 对应 ax + by + cz + d = 0
+    std::mt19937 gen_; // 随机数生成器
+};
+
 // 初始化测试环境
 // 自定义日志前缀函数
 void CustomLogPrefix(std::ostream& s, const google::LogMessage& l, void*)
