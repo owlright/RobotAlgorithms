@@ -1,6 +1,7 @@
 #include "common/math_utils.h"
 #include <Eigen/Dense>
 #include <fstream>
+#include <glog/logging.h>
 #include <gflags/gflags.h>
 #include <gtest/gtest.h>
 using namespace ra;
@@ -46,7 +47,7 @@ public:
     // 使用 FitPlane 函数拟合平面
     // clang-format off
     bool fitFromPoints(const std::vector<V3>& points, double eps = 0.1) {
-        bool success = ra::FitPlane(points, coeffs_, eps);
+        bool success = ra::FitPlane(points, coeffs_, eps, ra::PlaneFittingMethod::SVD);
         if (success) {
             normalize();
         } else {
@@ -124,38 +125,38 @@ private:
 };
 
 // 初始化测试环境
-// 自定义日志前缀函数
-void CustomLogPrefix(std::ostream& s, const google::LogMessage& l, void*)
-{
-    // 获取当前时间
-    auto now = std::chrono::system_clock::now();
-    auto time_t = std::chrono::system_clock::to_time_t(now);
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+// // 自定义日志前缀函数 需要glog0.7.0以上版本
+// void CustomLogPrefix(std::ostream& s, const google::LogMessage& l, void*)
+// {
+//     // 获取当前时间
+//     auto now = std::chrono::system_clock::now();
+//     auto time_t = std::chrono::system_clock::to_time_t(now);
+//     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
-    // 获取日志等级
-    const char* level = "";
-    switch (l.severity()) {
-    case google::GLOG_INFO:
-        level = "INFO";
-        break;
-    case google::GLOG_WARNING:
-        level = "WARNING";
-        break;
-    case google::GLOG_ERROR:
-        level = "ERROR";
-        break;
-    case google::GLOG_FATAL:
-        level = "FATAL";
-        break;
-    default:
-        level = "UNKNOWN";
-        break;
-    }
-    s << "[" << level << "]"
-      << "[" << std::put_time(std::localtime(&time_t), "%H:%M:%S") << '.' << std::setfill('0') << std::setw(3)
-      << ms.count() << "]"
-      << "[" << l.basename() << ":" << l.line() << "] ";
-}
+//     // 获取日志等级
+//     const char* level = "";
+//     switch (l.severity()) {
+//     case google::GLOG_INFO:
+//         level = "INFO";
+//         break;
+//     case google::GLOG_WARNING:
+//         level = "WARNING";
+//         break;
+//     case google::GLOG_ERROR:
+//         level = "ERROR";
+//         break;
+//     case google::GLOG_FATAL:
+//         level = "FATAL";
+//         break;
+//     default:
+//         level = "UNKNOWN";
+//         break;
+//     }
+//     s << "[" << level << "]"
+//       << "[" << std::put_time(std::localtime(&time_t), "%H:%M:%S") << '.' << std::setfill('0') << std::setw(3)
+//       << ms.count() << "]"
+//       << "[" << l.basename() << ":" << l.line() << "] ";
+// }
 
 class TestEnvironment : public ::testing::Environment {
 public:
@@ -164,8 +165,8 @@ public:
         google::InitGoogleLogging("test_math_utils");
         FLAGS_stderrthreshold = google::INFO;
         FLAGS_colorlogtostderr = true;
-        // 安装自定义日志前缀
-        google::InstallPrefixFormatter(&CustomLogPrefix, nullptr);
+        // 安装自定义日志前缀 需要glog0.7.0以上版本
+        // google::InstallPrefixFormatter(&CustomLogPrefix, nullptr);
     }
 
     void TearDown() override { google::ShutdownGoogleLogging(); }
@@ -250,7 +251,7 @@ TEST(FitPlaneTest, BasicFunctionality)
     };
     Eigen::Vector4d plane_coeffs;
     EXPECT_TRUE(ra::FitPlane(points, plane_coeffs));
-
+    LOG(INFO) << "Plane coefficients: " << plane_coeffs.transpose();
     // Check if the plane coefficients are correct
     EXPECT_NEAR(plane_coeffs[0], 0.573, 5e-3);
     EXPECT_NEAR(plane_coeffs[1], -0.573, 5e-3);
